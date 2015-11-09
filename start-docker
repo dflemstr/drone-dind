@@ -1,0 +1,19 @@
+#!/bin/bash -e
+PIDFILE=/var/run/docker.pid
+start-stop-daemon --pidfile "$PIDFILE" --start --background --no-close --exec /usr/local/bin/dind -- \
+  docker daemon --host=unix:///var/run/docker.sock --storage-driver=vfs --pidfile "$PIDFILE"
+
+WAIT_TIME=0
+until [ -f "$PIDFILE" ] || [ $WAIT_TIME -eq 5 ]
+do sleep $(( WAIT_TIME++ ))
+done
+
+if [ ! -f "$PIDFILE" ]
+then
+   echo >&2 "Docker daemon failed during initialization, see output for details"
+   exit 1
+fi
+
+unset PIDFILE
+unset EXIT_CODE
+unset WAIT_TIME

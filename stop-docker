@@ -1,0 +1,2 @@
+#!/bin/sh
+exec start-stop-daemon --pidfile /var/run/docker.pid --stop --retry 10
